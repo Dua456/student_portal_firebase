@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Student Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-box">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                <p class="form-footer">Don't have an account? <a href="signup.html">Sign Up</a></p>
+            </form>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.all.min.js"></script>
+
+    <script type="module">
+        import { auth, signInWithEmailAndPassword, database, ref, get } from './firebase-config.js';
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Show loading
+            Swal.fire({
+                title: 'Logging in...',
+                text: 'Please wait',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const userId = userCredential.user.uid;
+                
+                // Success message and redirect to dashboard
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Welcome Back!',
+                    text: 'Login successful',
+                    confirmButtonColor: '#667eea',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = 'dashboard.html';
+                });
+                
+            } catch (error) {
+                let errorMessage = 'Login failed!';
+                
+                if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Invalid email or password!';
+                } else if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No account found with this email!';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Incorrect password!';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address!';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'Too many attempts! Try again later.';
+                }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: errorMessage,
+                    confirmButtonColor: '#667eea'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

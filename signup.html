@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - Student Portal</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-box">
+            <h2>Create Account</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password:</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+                <p class="form-footer">Already have an account? <a href="login.html">Login</a></p>
+            </form>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.all.min.js"></script>
+
+    <script type="module">
+        import { auth, createUserWithEmailAndPassword } from './firebase-config.js';
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Password match check
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Password Mismatch',
+                    text: 'Passwords do not match!',
+                    confirmButtonColor: '#4a90e2'
+                });
+                return;
+            }
+
+            // Password length check
+            if (password.length < 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Weak Password',
+                    text: 'Password must be at least 6 characters!',
+                    confirmButtonColor: '#4a90e2'
+                });
+                return;
+            }
+
+            // Show loading
+            Swal.fire({
+                title: 'Creating Account...',
+                text: 'Please wait',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+
+                // Success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Account created successfully!',
+                    confirmButtonColor: '#4a90e2',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = 'login.html';
+                });
+
+            } catch (error) {
+                let errorMessage = 'Something went wrong!';
+
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'Email already registered!';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address!';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Password is too weak!';
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: errorMessage,
+                    confirmButtonColor: '#4a90e2'
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

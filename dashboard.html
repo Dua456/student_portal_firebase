@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <!-- Dashboard -->
+    <div id="dashboardPage" class="dashboard">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="navbar-left">
+                <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                <h1>Admin Dashboard</h1>
+            </div>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </nav>
+
+        <div class="main-container">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="sidebar">
+                <div class="sidebar-menu">
+                    <div class="menu-item active" onclick="showPage('dashboard')">
+                        <span class="menu-icon">🏠</span>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="menu-item" onclick="showPage('enrollment')">
+                        <span class="menu-icon">👥</span>
+                        <span>Student Enrollment</span>
+                    </div>
+                    <div class="menu-item" onclick="showPage('registration')">
+                        <span class="menu-icon">➕</span>
+                        <span>Student Registration</span>
+                    </div>
+                    <div class="menu-item" onclick="showPage('payment')">
+                        <span class="menu-icon">💰</span>
+                        <span>Payment</span>
+                    </div>
+                    <div class="menu-item" onclick="showPage('courses')">
+                        <span class="menu-icon">📚</span>
+                        <span>Courses</span>
+                    </div>
+                    <div class="menu-item" onclick="showPage('attendance')">
+                        <span class="menu-icon">📅</span>
+                        <span>Attendance</span>
+                    </div>
+                    <div class="menu-item" onclick="showPage('assignment')">
+                        <span class="menu-icon">📝</span>
+                        <span>Assignments</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Content -->
+            <main class="content">
+                <!-- Dashboard Page -->
+                <div id="dashboardContent" class="page active">
+                    <h2 style="margin-bottom: 20px; color: #333;">Dashboard Overview</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card blue">
+                            <h3>Total Students</h3>
+                            <p id="totalStudents">0</p>
+                        </div>
+                        <div class="stat-card green">
+                            <h3>Total Payments</h3>
+                            <p id="totalPayments">Rs 0</p>
+                        </div>
+                        <div class="stat-card purple">
+                            <h3>Courses</h3>
+                            <p>5</p>
+                        </div>
+                        <div class="stat-card orange">
+                            <h3>Attendance</h3>
+                            <p>0%</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>Recent Students</h2>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Course</th>
+                                        <th>Campus</th>
+                                        <th>Teacher</th>
+                                        <th>Days</th>
+                                        <th>Timing</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentStudentsTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enrollment Page -->
+                <div id="enrollmentContent" class="page">
+                    <div class="card">
+                        <h2>Student Enrollment</h2>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Course</th>
+                                        <th>Phone</th>
+                                        <th>Campus</th>
+                                        <th>Teacher</th>
+                                        <th>Days</th>
+                                        <th>Timing</th>
+                                        <th>Enroll Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="enrollmentTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration Page -->
+                <div id="registrationContent" class="page">
+                    <div class="card">
+                        <h2>Student Registration</h2>
+                        <div class="form-container">
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label>Student Image *</label>
+                                    <input type="file" id="studentImage" accept="image/*" onchange="previewImage(event)">
+                                    <div id="imagePreview" class="image-preview"></div>
+                                </div>
+
+                                <div class="form-row">
+                                    <label>Student Name *</label>
+                                    <input type="text" id="studentName" placeholder="Enter student name">
+                                </div>
+
+                                <div class="form-row">
+                                    <label>Email *</label>
+                                    <input type="email" id="studentEmail" placeholder="Enter email">
+                                </div>
+
+                                <div class="form-row">
+                                    <label>Phone *</label>
+                                    <input type="tel" id="studentPhone" placeholder="e.g., 0300-1234567">
+                                </div>
+
+                                <div class="form-row">
+                                    <label>Course *</label>
+                                    <select id="studentCourse">
+                                        <option value="">Select Course</option>
+                                        <option value="Web Development">Web Development</option>
+                                        <option value="Graphic Design">Graphic Design</option>
+                                        <option value="Mobile App Development">Mobile App Development</option>
+                                        <option value="Digital Marketing">Digital Marketing</option>
+                                        <option value="Data Science">Data Science</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-row">
+                                    <label>Campus *</label>
+                                    <select id="studentCampus">
+                                        <option value="">Select Campus</option>
+                                        <option value="Main Campus">Main Campus</option>
+                                        <option value="North Campus">North Campus</option>
+                                        <option value="South Campus">South Campus</option>
+                                        <option value="East Campus">East Campus</option>
+                                        <option value="West Campus">West Campus</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-row">
+                                    <label>Teacher *</label>
+                                    <select id="studentTeacher">
+                                        <option value="">Select Teacher</option>
+                                        <option value="Sir Ahmed">Sir Ahmed</option>
+                                        <option value="Sir Hassan">Sir Hassan</option>
+                                        <option value="Miss Ayesha">Miss Ayesha</option>
+                                        <option value="Sir Ali">Sir Ali</option>
+                                        <option value="Miss Fatima">Miss Fatima</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-row">
+                                    <label>Days *</label>
+                                    <select id="studentDays">
+                                        <option value="">Select Days</option>
+                                        <option value="Monday - Wednesday - Friday">Monday - Wednesday - Friday</option>
+                                        <option value="Tuesday - Thursday - Saturday">Tuesday - Thursday - Saturday</option>
+                                        <option value="Monday to Friday">Monday to Friday</option>
+                                        <option value="Saturday - Sunday">Saturday - Sunday</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-row">
+                                    <label>Timing *</label>
+                                    <select id="studentTiming">
+                                        <option value="">Select Timing</option>
+                                        <option value="9:00 AM - 12:00 PM">9:00 AM - 12:00 PM</option>
+                                        <option value="12:00 PM - 3:00 PM">12:00 PM - 3:00 PM</option>
+                                        <option value="3:00 PM - 6:00 PM">3:00 PM - 6:00 PM</option>
+                                        <option value="6:00 PM - 9:00 PM">6:00 PM - 9:00 PM</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-row">
+                                    <label>Enrollment Date *</label>
+                                    <input type="date" id="studentEnrollDate">
+                                </div>
+                            </div>
+
+                            <button class="btn-submit" onclick="registerStudent()">Register Student</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Page -->
+                <div id="paymentContent" class="page">
+                    <div class="card">
+                        <h2>Payment Records</h2>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Student Name</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Page -->
+                <div id="coursesContent" class="page">
+                    <div class="card">
+                        <h2>Available Courses</h2>
+                        <div class="course-grid">
+                            <div class="course-card">
+                                <h3>Web Development</h3>
+                                <p>Duration: 6 months</p>
+                                <p>Fee: Rs 4,000</p>
+                            </div>
+                            <div class="course-card">
+                                <h3>Graphic Design</h3>
+                                <p>Duration: 6 months</p>
+                                <p>Fee: Rs 3,000</p>
+                            </div>
+                            <div class="course-card">
+                                <h3>Mobile App Development</h3>
+                                <p>Duration: 8 months</p>
+                                <p>Fee: Rs 7,000</p>
+                            </div>
+                            <div class="course-card">
+                                <h3>Digital Marketing</h3>
+                                <p>Duration: 4 months</p>
+                                <p>Fee: Rs 4,000</p>
+                            </div>
+                            <div class="course-card">
+                                <h3>Data Science</h3>
+                                <p>Duration: 10 months</p>
+                                <p>Fee: Rs 5,000</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Page -->
+                <div id="attendanceContent" class="page">
+                    <div class="card">
+                        <h2>Attendance Records</h2>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Student Name</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignment Page -->
+                <div id="assignmentContent" class="page">
+                    <div class="card">
+                        <h2>Assignments</h2>
+                        <div class="course-grid">
+                            <div class="course-card">
+                                <h3>JavaScript Basics</h3>
+                                <p>Due Date: 2024-10-15</p>
+                                <p>Status: Pending</p>
+                            </div>
+                            <div class="course-card">
+                                <h3>React Components</h3>
+                                <p>Due Date: 2024-10-20</p>
+                                <p>Status: Pending</p>
+                            </div>
+                            <div class="course-card">
+                                <h3>Database Design</h3>
+                                <p>Due Date: 2024-10-25</p>
+                                <p>Status: Pending</p>
+                            </div>
+                            <div class="course-card">
+                                <h3>UI/UX Project</h3>
+                                <p>Due Date: 2024-10-30</p>
+                                <p>Status: Pending</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Sample Data
+        let students = [];
+
+        let payments = [];
+
+        let attendance = [];
+
+        let currentImageData = '';
+
+        // Logout Function
+        function logout() {
+            if(confirm('Are you sure you want to logout?')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Toggle Sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('hidden');
+        }
+
+        // Show Page
+        function showPage(pageName) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(pageName + 'Content').classList.add('active');
+            event.target.closest('.menu-item').classList.add('active');
+        }
+
+        // Preview Image
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentImageData = e.target.result;
+                    const preview = document.getElementById('imagePreview');
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Register Student
+        function registerStudent() {
+            const name = document.getElementById('studentName').value;
+            const email = document.getElementById('studentEmail').value;
+            const phone = document.getElementById('studentPhone').value;
+            const course = document.getElementById('studentCourse').value;
+            const campus = document.getElementById('studentCampus').value;
+            const teacher = document.getElementById('studentTeacher').value;
+            const days = document.getElementById('studentDays').value;
+            const timing = document.getElementById('studentTiming').value;
+            const enrollDate = document.getElementById('studentEnrollDate').value;
+
+            if (!name || !email || !phone || !course || !campus || !teacher || !days || !timing || !enrollDate) {
+                alert('Please fill all fields!');
+                return;
+            }
+
+            const newStudent = {
+                id: students.length + 1,
+                name: name,
+                email: email,
+                phone: phone,
+                course: course,
+                campus: campus,
+                teacher: teacher,
+                days: days,
+                timing: timing,
+                enrollDate: enrollDate,
+                image: currentImageData || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=667eea&color=fff&size=128`
+            };
+
+            students.push(newStudent);
+            
+            // Clear form
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentEmail').value = '';
+            document.getElementById('studentPhone').value = '';
+            document.getElementById('studentCourse').value = '';
+            document.getElementById('studentCampus').value = '';
+            document.getElementById('studentTeacher').value = '';
+            document.getElementById('studentDays').value = '';
+            document.getElementById('studentTiming').value = '';
+            document.getElementById('studentEnrollDate').value = '';
+            document.getElementById('studentImage').value = '';
+            document.getElementById('imagePreview').innerHTML = '';
+            currentImageData = '';
+
+            alert('Student registered successfully!');
+            updateDashboard();
+            showPage('enrollment');
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            document.getElementById('totalStudents').textContent = students.length;
+            
+            const totalAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
+            document.getElementById('totalPayments').textContent = 'Rs ' + totalAmount.toLocaleString();
+
+            // Update Recent Students Table
+            const recentTable = document.getElementById('recentStudentsTable');
+            recentTable.innerHTML = '';
+            
+            if (students.length === 0) {
+                recentTable.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
+                            <h3>No Students Yet</h3>
+                            <p>Please add students from the Student Registration page.</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                students.slice(-5).reverse().forEach(student => {
+                    recentTable.innerHTML += `
+                        <tr>
+                            <td><img src="${student.image}" alt="${student.name}" class="student-img"></td>
+                            <td>${student.name}</td>
+                            <td>${student.email}</td>
+                            <td>${student.course}</td>
+                            <td>${student.campus}</td>
+                            <td>${student.teacher}</td>
+                            <td>${student.days}</td>
+                            <td>${student.timing}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Update Enrollment Table
+            const enrollTable = document.getElementById('enrollmentTable');
+            enrollTable.innerHTML = '';
+            
+            if (students.length === 0) {
+                enrollTable.innerHTML = `
+                    <tr>
+                        <td colspan="11" style="text-align: center; padding: 40px; color: #999;">
+                            <h3>No Students Enrolled</h3>
+                            <p>Start by registering students from the Student Registration page.</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                students.forEach(student => {
+                    enrollTable.innerHTML += `
+                        <tr>
+                            <td>${student.id}</td>
+                            <td><img src="${student.image}" alt="${student.name}" class="student-img"></td>
+                            <td>${student.name}</td>
+                            <td>${student.email}</td>
+                            <td>${student.course}</td>
+                            <td>${student.phone}</td>
+                            <td>${student.campus}</td>
+                            <td>${student.teacher}</td>
+                            <td>${student.days}</td>
+                            <td>${student.timing}</td>
+                            <td>${student.enrollDate}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Update Payment Table
+            const paymentTable = document.getElementById('paymentTable');
+            paymentTable.innerHTML = '';
+            
+            if (payments.length === 0) {
+                paymentTable.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
+                            <h3>No Payment Records</h3>
+                            <p>Payment records will appear here.</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                payments.forEach(payment => {
+                    paymentTable.innerHTML += `
+                        <tr>
+                            <td>${payment.id}</td>
+                            <td>${payment.studentName}</td>
+                            <td>Rs ${payment.amount.toLocaleString()}</td>
+                            <td>${payment.date}</td>
+                            <td><span class="status-badge status-${payment.status.toLowerCase()}">${payment.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Update Attendance Table
+            const attendanceTable = document.getElementById('attendanceTable');
+            attendanceTable.innerHTML = '';
+            
+            if (attendance.length === 0) {
+                attendanceTable.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: #999;">
+                            <h3>No Attendance Records</h3>
+                            <p>Attendance records will appear here.</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                attendance.forEach(record => {
+                    attendanceTable.innerHTML += `
+                        <tr>
+                            <td>${record.id}</td>
+                            <td>${record.studentName}</td>
+                            <td>${record.date}</td>
+                            <td><span class="status-badge status-present">${record.status}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        // Initialize Dashboard on Load
+        window.onload = function() {
+            updateDashboard();
+        };
+    </script>
+</body>
+</html>
