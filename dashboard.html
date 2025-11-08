@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="dashboard.css">
 </head>
+
 <body>
-    <!-- Dashboard -->
     <div id="dashboardPage" class="dashboard">
         <!-- Navbar -->
         <nav class="navbar">
@@ -19,34 +20,37 @@
         </nav>
 
         <div class="main-container">
+            <!-- Sidebar Overlay -->
+            <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
             <!-- Sidebar -->
             <aside id="sidebar" class="sidebar">
                 <div class="sidebar-menu">
-                    <div class="menu-item active" onclick="showPage('dashboard')">
+                    <div class="menu-item active" onclick="showPage('dashboard', event)">
                         <span class="menu-icon">🏠</span>
                         <span>Dashboard</span>
                     </div>
-                    <div class="menu-item" onclick="showPage('enrollment')">
+                    <div class="menu-item" onclick="showPage('enrollment', event)">
                         <span class="menu-icon">👥</span>
                         <span>Student Enrollment</span>
                     </div>
-                    <div class="menu-item" onclick="showPage('registration')">
+                    <div class="menu-item" onclick="showPage('registration', event)">
                         <span class="menu-icon">➕</span>
                         <span>Student Registration</span>
                     </div>
-                    <div class="menu-item" onclick="showPage('payment')">
+                    <div class="menu-item" onclick="showPage('payment', event)">
                         <span class="menu-icon">💰</span>
                         <span>Payment</span>
                     </div>
-                    <div class="menu-item" onclick="showPage('courses')">
+                    <div class="menu-item" onclick="showPage('courses', event)">
                         <span class="menu-icon">📚</span>
                         <span>Courses</span>
                     </div>
-                    <div class="menu-item" onclick="showPage('attendance')">
+                    <div class="menu-item" onclick="showPage('attendance', event)">
                         <span class="menu-icon">📅</span>
                         <span>Attendance</span>
                     </div>
-                    <div class="menu-item" onclick="showPage('assignment')">
+                    <div class="menu-item" onclick="showPage('assignment', event)">
                         <span class="menu-icon">📝</span>
                         <span>Assignments</span>
                     </div>
@@ -93,8 +97,7 @@
                                         <th>Timing</th>
                                     </tr>
                                 </thead>
-                                <tbody id="recentStudentsTable">
-                                </tbody>
+                                <tbody id="recentStudentsTable"></tbody>
                             </table>
                         </div>
                     </div>
@@ -119,10 +122,10 @@
                                         <th>Days</th>
                                         <th>Timing</th>
                                         <th>Enroll Date</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="enrollmentTable">
-                                </tbody>
+                                <tbody id="enrollmentTable"></tbody>
                             </table>
                         </div>
                     </div>
@@ -131,12 +134,13 @@
                 <!-- Registration Page -->
                 <div id="registrationContent" class="page">
                     <div class="card">
-                        <h2>Student Registration</h2>
+                        <h2 id="formTitle">Student Registration</h2>
                         <div class="form-container">
                             <div class="form-grid">
                                 <div class="form-row">
                                     <label>Student Image *</label>
-                                    <input type="file" id="studentImage" accept="image/*" onchange="previewImage(event)">
+                                    <input type="file" id="studentImage" accept="image/*"
+                                        onchange="previewImage(event)">
                                     <div id="imagePreview" class="image-preview"></div>
                                 </div>
 
@@ -196,7 +200,8 @@
                                     <select id="studentDays">
                                         <option value="">Select Days</option>
                                         <option value="Monday - Wednesday - Friday">Monday - Wednesday - Friday</option>
-                                        <option value="Tuesday - Thursday - Saturday">Tuesday - Thursday - Saturday</option>
+                                        <option value="Tuesday - Thursday - Saturday">Tuesday - Thursday - Saturday
+                                        </option>
                                         <option value="Monday to Friday">Monday to Friday</option>
                                         <option value="Saturday - Sunday">Saturday - Sunday</option>
                                     </select>
@@ -219,7 +224,8 @@
                                 </div>
                             </div>
 
-                            <button class="btn-submit" onclick="registerStudent()">Register Student</button>
+                            <button class="btn-submit" onclick="registerStudent()" id="submitBtn">Register
+                                Student</button>
                         </div>
                     </div>
                 </div>
@@ -239,8 +245,7 @@
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-                                <tbody id="paymentTable">
-                                </tbody>
+                                <tbody id="paymentTable"></tbody>
                             </table>
                         </div>
                     </div>
@@ -294,8 +299,7 @@
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-                                <tbody id="attendanceTable">
-                                </tbody>
+                                <tbody id="attendanceTable"></tbody>
                             </table>
                         </div>
                     </div>
@@ -334,233 +338,270 @@
     </div>
 
     <script>
-        // Sample Data
+        // Global variables
         let students = [];
+        let editingId = null;
 
-        let payments = [];
+        // Load data from memory
+        function loadData() {
+            students = JSON.parse(localStorage.getItem("students")) || [];
+            renderTables();
+        }
 
-        let attendance = [];
+        // Save data to memory
+        function saveData() {
+            localStorage.setItem("students", JSON.stringify(students));
+        }
 
-        let currentImageData = '';
+        // Sidebar toggle with overlay
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("sidebarOverlay");
+            sidebar.classList.toggle("show");
+            overlay.classList.toggle("show");
+        }
 
-        // Logout Function
+        // Show page
+        function showPage(page, event) {
+            document.querySelectorAll(".menu-item").forEach(item => item.classList.remove("active"));
+            if (event) event.currentTarget.classList.add("active");
+
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+            document.getElementById(page + "Content").classList.add("active");
+
+            // Close sidebar on mobile after selecting a page
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+        }
+
+        // Logout
         function logout() {
             if(confirm('Are you sure you want to logout?')) {
                 window.location.href = 'login.html';
             }
         }
+        
 
-        // Toggle Sidebar
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('hidden');
-        }
-
-        // Show Page
-        function showPage(pageName) {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
-            
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => item.classList.remove('active'));
-            
-            document.getElementById(pageName + 'Content').classList.add('active');
-            event.target.closest('.menu-item').classList.add('active');
-        }
-
-        // Preview Image
+        // Image preview
         function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentImageData = e.target.result;
-                    const preview = document.getElementById('imagePreview');
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                }
-                reader.readAsDataURL(file);
-            }
+            const reader = new FileReader();
+            reader.onload = function () {
+                const output = document.getElementById('imagePreview');
+                output.innerHTML = `<img src="${reader.result}" style="max-width:100px; max-height:100px; border-radius:50%;">`;
+            };
+            reader.readAsDataURL(event.target.files[0]);
         }
 
-        // Register Student
+        // Register or Update student
         function registerStudent() {
-            const name = document.getElementById('studentName').value;
-            const email = document.getElementById('studentEmail').value;
-            const phone = document.getElementById('studentPhone').value;
-            const course = document.getElementById('studentCourse').value;
-            const campus = document.getElementById('studentCampus').value;
-            const teacher = document.getElementById('studentTeacher').value;
-            const days = document.getElementById('studentDays').value;
-            const timing = document.getElementById('studentTiming').value;
-            const enrollDate = document.getElementById('studentEnrollDate').value;
+            const name = document.getElementById("studentName").value.trim();
+            const email = document.getElementById("studentEmail").value.trim();
+            const phone = document.getElementById("studentPhone").value.trim();
+            const course = document.getElementById("studentCourse").value;
+            const campus = document.getElementById("studentCampus").value;
+            const teacher = document.getElementById("studentTeacher").value;
+            const days = document.getElementById("studentDays").value;
+            const timing = document.getElementById("studentTiming").value;
+            const enrollDate = document.getElementById("studentEnrollDate").value;
+            const imageFile = document.getElementById("studentImage").files[0];
 
+            // Validation
             if (!name || !email || !phone || !course || !campus || !teacher || !days || !timing || !enrollDate) {
-                alert('Please fill all fields!');
+                alert("Please fill all required fields!");
                 return;
             }
 
-            const newStudent = {
-                id: students.length + 1,
-                name: name,
-                email: email,
-                phone: phone,
-                course: course,
-                campus: campus,
-                teacher: teacher,
-                days: days,
-                timing: timing,
-                enrollDate: enrollDate,
-                image: currentImageData || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=667eea&color=fff&size=128`
+            // If editing and no new image, keep old image
+            if (editingId !== null && !imageFile) {
+                const student = students.find(s => s.id === editingId);
+                updateStudent(student.image);
+                return;
+            }
+
+            if (!imageFile && editingId === null) {
+                alert("Please select an image!");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function () {
+                if (editingId !== null) {
+                    updateStudent(reader.result);
+                } else {
+                    addStudent(reader.result);
+                }
+            };
+            reader.readAsDataURL(imageFile);
+        }
+
+        // Add new student
+        function addStudent(imageData) {
+            const student = {
+                id: students.length ? Math.max(...students.map(s => s.id)) + 1 : 1,
+                name: document.getElementById("studentName").value.trim(),
+                email: document.getElementById("studentEmail").value.trim(),
+                phone: document.getElementById("studentPhone").value.trim(),
+                course: document.getElementById("studentCourse").value,
+                campus: document.getElementById("studentCampus").value,
+                teacher: document.getElementById("studentTeacher").value,
+                days: document.getElementById("studentDays").value,
+                timing: document.getElementById("studentTiming").value,
+                enrollDate: document.getElementById("studentEnrollDate").value,
+                image: imageData
             };
 
-            students.push(newStudent);
-            
-            // Clear form
-            document.getElementById('studentName').value = '';
-            document.getElementById('studentEmail').value = '';
-            document.getElementById('studentPhone').value = '';
-            document.getElementById('studentCourse').value = '';
-            document.getElementById('studentCampus').value = '';
-            document.getElementById('studentTeacher').value = '';
-            document.getElementById('studentDays').value = '';
-            document.getElementById('studentTiming').value = '';
-            document.getElementById('studentEnrollDate').value = '';
-            document.getElementById('studentImage').value = '';
-            document.getElementById('imagePreview').innerHTML = '';
-            currentImageData = '';
-
-            alert('Student registered successfully!');
-            updateDashboard();
-            showPage('enrollment');
+            students.push(student);
+            saveData();
+            alert("Student Registered Successfully!");
+            clearForm();
+            renderTables();
         }
+        // Update existing student
+        function updateStudent(imageData) {
+            const index = students.findIndex(s => s.id === editingId);
+            if (index !== -1) {
+                students[index] = {
+                    id: editingId,
+                    name: document.getElementById("studentName").value.trim(),
+                    email: document.getElementById("studentEmail").value.trim(),
+                    phone: document.getElementById("studentPhone").value.trim(),
+                    course: document.getElementById("studentCourse").value,
+                    campus: document.getElementById("studentCampus").value,
+                    teacher: document.getElementById("studentTeacher").value,
+                    days: document.getElementById("studentDays").value,
+                    timing: document.getElementById("studentTiming").value,
+                    enrollDate: document.getElementById("studentEnrollDate").value,
+                    image: imageData
+                };
 
-        // Update Dashboard
-        function updateDashboard() {
-            document.getElementById('totalStudents').textContent = students.length;
-            
-            const totalAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
-            document.getElementById('totalPayments').textContent = 'Rs ' + totalAmount.toLocaleString();
-
-            // Update Recent Students Table
-            const recentTable = document.getElementById('recentStudentsTable');
-            recentTable.innerHTML = '';
-            
-            if (students.length === 0) {
-                recentTable.innerHTML = `
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
-                            <h3>No Students Yet</h3>
-                            <p>Please add students from the Student Registration page.</p>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                students.slice(-5).reverse().forEach(student => {
-                    recentTable.innerHTML += `
-                        <tr>
-                            <td><img src="${student.image}" alt="${student.name}" class="student-img"></td>
-                            <td>${student.name}</td>
-                            <td>${student.email}</td>
-                            <td>${student.course}</td>
-                            <td>${student.campus}</td>
-                            <td>${student.teacher}</td>
-                            <td>${student.days}</td>
-                            <td>${student.timing}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            // Update Enrollment Table
-            const enrollTable = document.getElementById('enrollmentTable');
-            enrollTable.innerHTML = '';
-            
-            if (students.length === 0) {
-                enrollTable.innerHTML = `
-                    <tr>
-                        <td colspan="11" style="text-align: center; padding: 40px; color: #999;">
-                            <h3>No Students Enrolled</h3>
-                            <p>Start by registering students from the Student Registration page.</p>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                students.forEach(student => {
-                    enrollTable.innerHTML += `
-                        <tr>
-                            <td>${student.id}</td>
-                            <td><img src="${student.image}" alt="${student.name}" class="student-img"></td>
-                            <td>${student.name}</td>
-                            <td>${student.email}</td>
-                            <td>${student.course}</td>
-                            <td>${student.phone}</td>
-                            <td>${student.campus}</td>
-                            <td>${student.teacher}</td>
-                            <td>${student.days}</td>
-                            <td>${student.timing}</td>
-                            <td>${student.enrollDate}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            // Update Payment Table
-            const paymentTable = document.getElementById('paymentTable');
-            paymentTable.innerHTML = '';
-            
-            if (payments.length === 0) {
-                paymentTable.innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
-                            <h3>No Payment Records</h3>
-                            <p>Payment records will appear here.</p>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                payments.forEach(payment => {
-                    paymentTable.innerHTML += `
-                        <tr>
-                            <td>${payment.id}</td>
-                            <td>${payment.studentName}</td>
-                            <td>Rs ${payment.amount.toLocaleString()}</td>
-                            <td>${payment.date}</td>
-                            <td><span class="status-badge status-${payment.status.toLowerCase()}">${payment.status}</span></td>
-                        </tr>
-                    `;
-                });
-            }
-
-            // Update Attendance Table
-            const attendanceTable = document.getElementById('attendanceTable');
-            attendanceTable.innerHTML = '';
-            
-            if (attendance.length === 0) {
-                attendanceTable.innerHTML = `
-                    <tr>
-                        <td colspan="4" style="text-align: center; padding: 40px; color: #999;">
-                            <h3>No Attendance Records</h3>
-                            <p>Attendance records will appear here.</p>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                attendance.forEach(record => {
-                    attendanceTable.innerHTML += `
-                        <tr>
-                            <td>${record.id}</td>
-                            <td>${record.studentName}</td>
-                            <td>${record.date}</td>
-                            <td><span class="status-badge status-present">${record.status}</span></td>
-                        </tr>
-                    `;
-                });
+                saveData();
+                alert("Student Updated Successfully!");
+                clearForm();
+                renderTables();
             }
         }
 
-        // Initialize Dashboard on Load
-        window.onload = function() {
-            updateDashboard();
-        };
+        // Edit student
+        function editStudent(id) {
+            const student = students.find(s => s.id === id);
+            if (student) {
+                editingId = id;
+                document.getElementById("studentName").value = student.name;
+                document.getElementById("studentEmail").value = student.email;
+                document.getElementById("studentPhone").value = student.phone;
+                document.getElementById("studentCourse").value = student.course;
+                document.getElementById("studentCampus").value = student.campus;
+                document.getElementById("studentTeacher").value = student.teacher;
+                document.getElementById("studentDays").value = student.days;
+                document.getElementById("studentTiming").value = student.timing;
+                document.getElementById("studentEnrollDate").value = student.enrollDate;
+                document.getElementById("imagePreview").innerHTML = `<img src="${student.image}" style="max-width:100px; max-height:100px; border-radius:50%;">`;
+                
+                document.getElementById("formTitle").innerText = "Update Student";
+                document.getElementById("submitBtn").innerText = "Update Student";
+                
+                showPage('registration', null);
+                document.querySelectorAll(".menu-item").forEach(item => item.classList.remove("active"));
+                document.querySelectorAll(".menu-item")[2].classList.add("active");
+            }
+        }
+
+        // Clear form
+        function clearForm() {
+            editingId = null;
+            document.getElementById("studentName").value = "";
+            document.getElementById("studentEmail").value = "";
+            document.getElementById("studentPhone").value = "";
+            document.getElementById("studentCourse").value = "";
+            document.getElementById("studentCampus").value = "";
+            document.getElementById("studentTeacher").value = "";
+            document.getElementById("studentDays").value = "";
+            document.getElementById("studentTiming").value = "";
+            document.getElementById("studentEnrollDate").value = "";
+            document.getElementById("studentImage").value = "";
+            document.getElementById("imagePreview").innerHTML = "";
+            document.getElementById("formTitle").innerText = "Student Registration";
+            document.getElementById("submitBtn").innerText = "Register Student";
+        }
+
+        // Delete student
+        function deleteStudent(id) {
+            if (confirm("Are you sure you want to delete this student?")) {
+                students = students.filter(s => s.id !== id);
+                saveData();
+                renderTables();
+                alert("Student deleted successfully!");
+            }
+        }
+
+        // Render tables
+        function renderTables() {
+            const enrollmentTable = document.getElementById("enrollmentTable");
+            const recentTable = document.getElementById("recentStudentsTable");
+
+            enrollmentTable.innerHTML = "";
+            recentTable.innerHTML = "";
+
+            let totalPayments = 0;
+
+            students.forEach(student => {
+                enrollmentTable.innerHTML += `
+                <tr>
+                    <td>${student.id}</td>
+                    <td><img src="${student.image}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;"></td>
+                    <td>${student.name}</td>
+                    <td>${student.email}</td>
+                    <td>${student.course}</td>
+                    <td>${student.phone}</td>
+                    <td>${student.campus}</td>
+                    <td>${student.teacher}</td>
+                    <td>${student.days}</td>
+                    <td>${student.timing}</td>
+                    <td>${student.enrollDate}</td>
+                    <td>
+                        <button class="btn-edit" onclick="editStudent(${student.id})">Edit</button>
+                        <button class="btn-delete" onclick="deleteStudent(${student.id})">Delete</button>
+                    </td>
+                </tr>
+                `;
+
+                recentTable.innerHTML += `
+                <tr>
+                    <td><img src="${student.image}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"></td>
+                    <td>${student.name}</td>
+                    <td>${student.email}</td>
+                    <td>${student.course}</td>
+                    <td>${student.campus}</td>
+                    <td>${student.teacher}</td>
+                    <td>${student.days}</td>
+                    <td>${student.timing}</td>
+                </tr>
+                `;
+
+                totalPayments += 4000;
+            });
+
+            document.getElementById("totalStudents").innerText = students.length;
+            document.getElementById("totalPayments").innerText = `Rs ${totalPayments.toLocaleString()}`;
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.menu-toggle');
+            const isClickInsideSidebar = sidebar.contains(event.target);
+            const isClickOnToggle = toggle.contains(event.target);
+
+            if (!isClickInsideSidebar && !isClickOnToggle && sidebar.classList.contains('show')) {
+                toggleSidebar();
+            }
+        });
     </script>
 </body>
 </html>

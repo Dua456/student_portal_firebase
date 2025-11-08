@@ -83,10 +83,6 @@ body {
     flex-shrink: 0;
 }
 
-.sidebar.hidden {
-    transform: translateX(-250px);
-}
-
 .sidebar-menu {
     padding: 20px 0;
 }
@@ -250,14 +246,6 @@ table tbody tr:hover {
     background: #f8f9fa;
 }
 
-.student-img {
-    width: clamp(30px, 5vw, 40px);
-    height: clamp(30px, 5vw, 40px);
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #667eea;
-}
-
 /* Form */
 .form-container {
     max-width: 100%;
@@ -329,33 +317,36 @@ table tbody tr:hover {
     background: #5568d3;
 }
 
-.status-badge {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: clamp(11px, 1.5vw, 12px);
-    font-weight: 500;
-    display: inline-block;
-    white-space: nowrap;
+/* Buttons */
+.btn-edit {
+    padding: 6px 12px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+    font-size: clamp(11px, 1.5vw, 13px);
+    transition: background 0.3s;
 }
 
-.status-paid {
-    background: #d4edda;
-    color: #155724;
+.btn-edit:hover {
+    background: #2980b9;
 }
 
-.status-pending {
-    background: #fff3cd;
-    color: #856404;
+.btn-delete {
+    padding: 6px 12px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: clamp(11px, 1.5vw, 13px);
+    transition: background 0.3s;
 }
 
-.status-present {
-    background: #d4edda;
-    color: #155724;
-}
-
-.status-absent {
-    background: #f8d7da;
-    color: #721c24;
+.btn-delete:hover {
+    background: #c0392b;
 }
 
 /* Course Grid */
@@ -391,287 +382,53 @@ table tbody tr:hover {
     font-size: clamp(12px, 2vw, 14px);
 }
 
-/* Tablet Responsive (768px - 1024px) */
-@media (max-width: 1024px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .course-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    table {
-        min-width: 500px;
-    }
-}
-
-
-/* Mobile Responsive (max-width: 768px) */
+/* Mobile Responsive */
 @media (max-width: 768px) {
     .sidebar {
         position: fixed;
+        left: 0;
+        top: 60px;
+        height: calc(100vh - 60px);
         z-index: 1000;
-        height: 100vh;
-        top: 0;
-    }
-
-    .sidebar.hidden {
         transform: translateX(-100%);
     }
 
-    .content {
-        width: 100%;
-        margin-left: 0;
-    }
-
-    .navbar {
-        padding: 12px 15px;
-    }
-
-    .navbar h1 {
-        font-size: 18px;
-    }
-
-    .btn-logout {
-        padding: 6px 12px;
-        font-size: 12px;
+    .sidebar.show {
+        transform: translateX(0);
     }
 
     .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
+        grid-template-columns: repeat(2, 1fr);
     }
 
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
+    .form-grid,
     .course-grid {
         grid-template-columns: 1fr;
-    }
-
-    table {
-        font-size: 12px;
-        min-width: 500px;
-    }
-
-    .menu-item {
-        padding: 12px 15px;
-        font-size: 14px;
-    }
-
-    .btn-submit {
-        max-width: 100%;
     }
 }
 
-/* Small Mobile Responsive (max-width: 480px) */
 @media (max-width: 480px) {
-    .navbar {
-        padding: 10px 12px;
-    }
-
-    .navbar h1 {
-        font-size: 16px;
-    }
-
-    .navbar-left {
-        gap: 10px;
-    }
-
-    .btn-logout {
-        padding: 5px 10px;
-        font-size: 11px;
-    }
-
-    .menu-toggle {
-        font-size: 20px;
-        padding: 3px 8px;
-    }
-
-    .content {
-        padding: 12px;
-    }
-
-    .card {
-        padding: 12px;
-        margin-bottom: 15px;
-    }
-
-    .card h2 {
-        font-size: 18px;
-        margin-bottom: 15px;
-    }
-
-    .stat-card {
-        padding: 15px;
-    }
-
-    .stat-card h3 {
-        font-size: 13px;
-    }
-
-    .stat-card p {
-        font-size: 24px;
-    }
-
-    .stats-grid,
-    .form-grid,
-    .course-grid {
-        gap: 12px;
-    }
-
-    table {
-        min-width: 400px;
-        font-size: 11px;
-    }
-
-    table th,
-    table td {
-        padding: 6px;
-    }
-
-    .student-img {
-        width: 28px;
-        height: 28px;
-    }
-
-    .status-badge {
-        padding: 4px 10px;
-        font-size: 10px;
-    }
-
-    .course-card h3 {
-        font-size: 16px;
-    }
-
-    .course-card p {
-        font-size: 12px;
-    }
-
-    .form-row input,
-    .form-row select {
-        padding: 10px;
-        font-size: 13px;
-    }
-
-    .form-row label {
-        font-size: 13px;
-        margin-bottom: 6px;
-    }
-
-    .btn-submit {
-        padding: 10px 20px;
-        font-size: 14px;
+    .stats-grid {
+        grid-template-columns: 1fr;
     }
 
     .sidebar {
         width: 220px;
     }
-
-    .sidebar.hidden {
-        transform: translateX(-220px);
-    }
 }
 
-/* Extra Small Devices (max-width: 360px) */
-@media (max-width: 360px) {
-    .navbar h1 {
-        font-size: 14px;
-    }
-
-    .btn-logout {
-        padding: 4px 8px;
-        font-size: 10px;
-    }
-
-    .content {
-        padding: 10px;
-    }
-
-    .stat-card p {
-        font-size: 22px;
-    }
-
-    table {
-        min-width: 350px;
-        font-size: 10px;
-    }
-
-    .sidebar {
-        width: 200px;
-    }
-
-    .sidebar.hidden {
-        transform: translateX(-200px);
-    }
-
-    .menu-item {
-        padding: 10px 12px;
-        font-size: 13px;
-    }
+/* Overlay for mobile sidebar */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 60px);
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
 }
 
-/* Landscape Mobile */
-@media (max-height: 500px) and (orientation: landscape) {
-    .navbar {
-        padding: 8px 15px;
-    }
-
-    .content {
-        padding: 15px;
-        max-height: calc(100vh - 50px);
-    }
-
-    .stat-card {
-        padding: 15px;
-    }
-
-    .stat-card p {
-        font-size: 24px;
-    }
-
-    .sidebar-menu {
-        padding: 10px 0;
-    }
-
-    .menu-item {
-        padding: 10px 15px;
-    }
-}
-
-/* Scrollbar Styling */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-/* Touch Device Optimizations */
-@media (hover: none) and (pointer: coarse) {
-    .menu-item,
-    .btn-logout,
-    .btn-submit,
-    .course-card {
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .menu-item:active,
-    .btn-logout:active,
-    .btn-submit:active {
-        transform: scale(0.98);
-    }
+.sidebar-overlay.show {
+    display: block;
 }
